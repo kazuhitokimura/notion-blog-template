@@ -18,13 +18,17 @@ export default function Home({ posts }) {
           <div className="flex items-center space-x-4">
             {/* SVG icons remain unchanged */}
           </div>
-          <h1 className="text-3xl font-bold my-2">Next.js + Notion API ブログ</h1>
+          <h1 className="text-3xl font-bold my-2">
+            Next.js + Notion API ブログ
+          </h1>
           <p className="text-gray-600">
             Notionと連携しているブログです。Notionに書き込めばそのままブログとして投稿できます。
           </p>
         </header>
 
-        <h2 className="text-xl font-semibold my-4 uppercase tracking-wide">All Posts</h2>
+        <h2 className="text-xl font-semibold my-4 uppercase tracking-wide">
+          All Posts
+        </h2>
         <ol>
           {posts.map((post) => {
             const date = new Date(post.last_edited_time).toLocaleString(
@@ -33,7 +37,7 @@ export default function Home({ posts }) {
                 month: "short",
                 day: "2-digit",
                 year: "numeric",
-              }
+              },
             );
             return (
               <li key={post.id} className="mb-6">

@@ -17,14 +17,20 @@ export const Text = ({ text }) => {
       <span
         className={[
           bold ? "font-bold" : "",
-          code ? "font-mono bg-gray-100 p-1 rounded" : "",
+          code ? "rounded bg-gray-100 p-1 font-mono" : "",
           italic ? "italic" : "",
           strikethrough ? "line-through" : "",
           underline ? "underline" : "",
         ].join(" ")}
         style={color !== "default" ? { color } : {}}
       >
-        {text.link ? <a href={text.link.url} className="text-blue-500 hover:text-blue-700">{text.content}</a> : text.content}
+        {text.link ? (
+          <a href={text.link.url} className="text-blue-500 hover:text-blue-700">
+            {text.content}
+          </a>
+        ) : (
+          text.content
+        )}
       </span>
     );
   });
@@ -35,26 +41,20 @@ const renderNestedList = (block) => {
   const value = block[type];
   if (!value) return null;
 
-  const isNumberedList = value.children[0].type === 'numbered_list_item';
+  const isNumberedList = value.children[0].type === "numbered_list_item";
 
-  return (
-    isNumberedList ? (
-      <ol className="list-decimal list-inside">
-        {value.children.map((childBlock) => (
-          <li key={childBlock.id}>
-            {renderBlock(childBlock)}
-          </li>
-        ))}
-      </ol>
-    ) : (
-      <ul className="list-disc list-inside">
-        {value.children.map((childBlock) => (
-          <li key={childBlock.id}>
-            {renderBlock(childBlock)}
-          </li>
-        ))}
-      </ul>
-    )
+  return isNumberedList ? (
+    <ol className="list-inside list-decimal">
+      {value.children.map((childBlock) => (
+        <li key={childBlock.id}>{renderBlock(childBlock)}</li>
+      ))}
+    </ol>
+  ) : (
+    <ul className="list-inside list-disc">
+      {value.children.map((childBlock) => (
+        <li key={childBlock.id}>{renderBlock(childBlock)}</li>
+      ))}
+    </ul>
   );
 };
 
@@ -71,19 +71,19 @@ const renderBlock = (block) => {
       );
     case "heading_1":
       return (
-        <h1 className="text-3xl font-bold my-4">
+        <h1 className="my-4 text-3xl font-bold">
           <Text text={value.text} />
         </h1>
       );
     case "heading_2":
       return (
-        <h2 className="text-2xl font-semibold my-3">
+        <h2 className="my-3 text-2xl font-semibold">
           <Text text={value.text} />
         </h2>
       );
     case "heading_3":
       return (
-        <h3 className="text-xl font-medium my-2">
+        <h3 className="my-2 text-xl font-medium">
           <Text text={value.text} />
         </h3>
       );
@@ -97,8 +97,13 @@ const renderBlock = (block) => {
       );
     case "to_do":
       return (
-        <div className="flex items-center mb-2">
-          <input type="checkbox" id={id} defaultChecked={value.checked} className="mr-2" />
+        <div className="mb-2 flex items-center">
+          <input
+            type="checkbox"
+            id={id}
+            defaultChecked={value.checked}
+            className="mr-2"
+          />
           <label htmlFor={id} className="flex-1">
             <Text text={value.text} />
           </label>
@@ -118,28 +123,36 @@ const renderBlock = (block) => {
     case "child_page":
       return <p className="mb-2">{value.title}</p>;
     case "image":
-      const src = value.type === "external" ? value.external.url : value.file.url;
+      const src =
+        value.type === "external" ? value.external.url : value.file.url;
       const caption = value.caption ? value.caption[0]?.plain_text : "";
       return (
         <figure className="my-4">
           <img src={src} alt={caption} className="w-full" />
-          {caption && <figcaption className="text-sm text-gray-500">{caption}</figcaption>}
+          {caption && (
+            <figcaption className="text-sm text-gray-500">{caption}</figcaption>
+          )}
         </figure>
       );
     case "divider":
       return <hr className="my-4" />;
     case "quote":
-      return <blockquote className="italic border-l-4 border-gray-500 pl-4 my-4">{value.text[0].plain_text}</blockquote>;
+      return (
+        <blockquote className="my-4 border-l-4 border-gray-500 pl-4 italic">
+          {value.text[0].plain_text}
+        </blockquote>
+      );
     case "code":
       return (
-        <pre className="bg-gray-100 p-4 rounded-lg my-4">
+        <pre className="my-4 rounded-lg bg-gray-100 p-4">
           <code className="block whitespace-pre-wrap">
             {value.text[0].plain_text}
           </code>
         </pre>
       );
     case "file":
-      const src_file = value.type === "external" ? value.external.url : value.file.url;
+      const src_file =
+        value.type === "external" ? value.external.url : value.file.url;
       const splitSourceArray = src_file.split("/");
       const lastElementInArray = splitSourceArray[splitSourceArray.length - 1];
       const caption_file = value.caption ? value.caption[0]?.plain_text : "";
@@ -148,16 +161,26 @@ const renderBlock = (block) => {
           <div className="flex items-center">
             📎{" "}
             <Link href={src_file} passHref>
-              <a className="ml-2 underline text-blue-600 hover:text-blue-800">{lastElementInArray.split("?")[0]}</a>
+              <a className="ml-2 text-blue-600 underline hover:text-blue-800">
+                {lastElementInArray.split("?")[0]}
+              </a>
             </Link>
           </div>
-          {caption_file && <figcaption className="text-sm text-gray-500">{caption_file}</figcaption>}
+          {caption_file && (
+            <figcaption className="text-sm text-gray-500">
+              {caption_file}
+            </figcaption>
+          )}
         </figure>
       );
     case "bookmark":
       const href = value.url;
       return (
-        <a href={href} target="_blank" className="block underline text-blue-600 hover:text-blue-800 my-2">
+        <a
+          href={href}
+          target="_blank"
+          className="my-2 block text-blue-600 underline hover:text-blue-800"
+        >
           {href}
         </a>
       );
@@ -178,7 +201,7 @@ export default function Post({ page, blocks }) {
       </Head>
 
       <article className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold my-4">
+        <h1 className="my-4 text-3xl font-bold">
           <Text text={page.properties.Name.title} />
         </h1>
         <section>
@@ -217,13 +240,13 @@ export const getStaticProps = async (context) => {
           id: block.id,
           children: await getBlocks(block.id),
         };
-      })
+      }),
   );
   const blocksWithChildren = blocks.map((block) => {
     // Add child blocks if the block should contain children but none exists
     if (block.has_children && !block[block.type].children) {
       block[block.type]["children"] = childBlocks.find(
-        (x) => x.id === block.id
+        (x) => x.id === block.id,
       )?.children;
     }
     return block;
