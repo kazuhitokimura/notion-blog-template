@@ -3,7 +3,6 @@ import Head from "next/head";
 import { getDatabase, getPage, getBlocks } from "../lib/notion";
 import Link from "next/link";
 import { databaseId } from "./index.js";
-import styles from "./post.module.css";
 
 export const Text = ({ text }) => {
   if (!text) {
@@ -17,15 +16,15 @@ export const Text = ({ text }) => {
     return (
       <span
         className={[
-          bold ? styles.bold : "",
-          code ? styles.code : "",
-          italic ? styles.italic : "",
-          strikethrough ? styles.strikethrough : "",
-          underline ? styles.underline : "",
+          bold ? "font-bold" : "",
+          code ? "font-mono bg-gray-100 p-1 rounded" : "",
+          italic ? "italic" : "",
+          strikethrough ? "line-through" : "",
+          underline ? "underline" : "",
         ].join(" ")}
         style={color !== "default" ? { color } : {}}
       >
-        {text.link ? <a href={text.link.url}>{text.content}</a> : text.content}
+        {text.link ? <a href={text.link.url} className="text-blue-500 hover:text-blue-700">{text.content}</a> : text.content}
       </span>
     );
   });
@@ -36,21 +35,28 @@ const renderNestedList = (block) => {
   const value = block[type];
   if (!value) return null;
 
-  const isNumberedList = value.children[0].type === 'numbered_list_item'
+  const isNumberedList = value.children[0].type === 'numbered_list_item';
 
-  if (isNumberedList) {
-    return (
-      <ol>
-        {value.children.map((block) => renderBlock(block))}
-      </ol>
-    )
-  }
   return (
-    <ul>
-      {value.children.map((block) => renderBlock(block))}
-    </ul>
-  )
-}
+    isNumberedList ? (
+      <ol className="list-decimal list-inside">
+        {value.children.map((childBlock) => (
+          <li key={childBlock.id}>
+            {renderBlock(childBlock)}
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <ul className="list-disc list-inside">
+        {value.children.map((childBlock) => (
+          <li key={childBlock.id}>
+            {renderBlock(childBlock)}
+          </li>
+        ))}
+      </ul>
+    )
+  );
+};
 
 const renderBlock = (block) => {
   const { type, id } = block;
@@ -59,48 +65,48 @@ const renderBlock = (block) => {
   switch (type) {
     case "paragraph":
       return (
-        <p>
+        <p className="mb-4">
           <Text text={value.text} />
         </p>
       );
     case "heading_1":
       return (
-        <h1>
+        <h1 className="text-3xl font-bold my-4">
           <Text text={value.text} />
         </h1>
       );
     case "heading_2":
       return (
-        <h2>
+        <h2 className="text-2xl font-semibold my-3">
           <Text text={value.text} />
         </h2>
       );
     case "heading_3":
       return (
-        <h3>
+        <h3 className="text-xl font-medium my-2">
           <Text text={value.text} />
         </h3>
       );
     case "bulleted_list_item":
     case "numbered_list_item":
       return (
-        <li>
+        <li className="ml-4 list-disc">
           <Text text={value.text} />
           {!!value.children && renderNestedList(block)}
         </li>
       );
     case "to_do":
       return (
-        <div>
-          <label htmlFor={id}>
-            <input type="checkbox" id={id} defaultChecked={value.checked} />{" "}
+        <div className="flex items-center mb-2">
+          <input type="checkbox" id={id} defaultChecked={value.checked} className="mr-2" />
+          <label htmlFor={id} className="flex-1">
             <Text text={value.text} />
           </label>
         </div>
       );
     case "toggle":
       return (
-        <details>
+        <details className="mb-2">
           <summary>
             <Text text={value.text} />
           </summary>
@@ -110,62 +116,58 @@ const renderBlock = (block) => {
         </details>
       );
     case "child_page":
-      return <p>{value.title}</p>;
+      return <p className="mb-2">{value.title}</p>;
     case "image":
-      const src =
-        value.type === "external" ? value.external.url : value.file.url;
+      const src = value.type === "external" ? value.external.url : value.file.url;
       const caption = value.caption ? value.caption[0]?.plain_text : "";
       return (
-        <figure>
-          <img src={src} alt={caption} />
-          {caption && <figcaption>{caption}</figcaption>}
+        <figure className="my-4">
+          <img src={src} alt={caption} className="w-full" />
+          {caption && <figcaption className="text-sm text-gray-500">{caption}</figcaption>}
         </figure>
       );
     case "divider":
-      return <hr key={id} />;
+      return <hr className="my-4" />;
     case "quote":
-      return <blockquote key={id}>{value.text[0].plain_text}</blockquote>;
+      return <blockquote className="italic border-l-4 border-gray-500 pl-4 my-4">{value.text[0].plain_text}</blockquote>;
     case "code":
       return (
-        <pre className={styles.pre}>
-          <code className={styles.code_block} key={id}>
+        <pre className="bg-gray-100 p-4 rounded-lg my-4">
+          <code className="block whitespace-pre-wrap">
             {value.text[0].plain_text}
           </code>
         </pre>
       );
     case "file":
-      const src_file =
-        value.type === "external" ? value.external.url : value.file.url;
+      const src_file = value.type === "external" ? value.external.url : value.file.url;
       const splitSourceArray = src_file.split("/");
       const lastElementInArray = splitSourceArray[splitSourceArray.length - 1];
       const caption_file = value.caption ? value.caption[0]?.plain_text : "";
       return (
-        <figure>
-          <div className={styles.file}>
+        <figure className="my-4">
+          <div className="flex items-center">
             📎{" "}
             <Link href={src_file} passHref>
-              {lastElementInArray.split("?")[0]}
+              <a className="ml-2 underline text-blue-600 hover:text-blue-800">{lastElementInArray.split("?")[0]}</a>
             </Link>
           </div>
-          {caption_file && <figcaption>{caption_file}</figcaption>}
+          {caption_file && <figcaption className="text-sm text-gray-500">{caption_file}</figcaption>}
         </figure>
       );
     case "bookmark":
-      const href = value.url
+      const href = value.url;
       return (
-        <a href={ href } target="_brank" className={styles.bookmark}>
-          { href }
+        <a href={href} target="_blank" className="block underline text-blue-600 hover:text-blue-800 my-2">
+          {href}
         </a>
       );
     default:
-      return `❌ Unsupported block (${
-        type === "unsupported" ? "unsupported by Notion API" : type
-      })`;
+      return `❌ Unsupported block (${type === "unsupported" ? "unsupported by Notion API" : type})`;
   }
 };
 
 export default function Post({ page, blocks }) {
-  if (!page || !blocks) {
+  if (!page || !blocks || !page.properties.Name.title[0]) {
     return <div />;
   }
   return (
@@ -175,8 +177,8 @@ export default function Post({ page, blocks }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <article className={styles.container}>
-        <h1 className={styles.name}>
+      <article className="container mx-auto px-4">
+        <h1 className="text-3xl font-bold my-4">
           <Text text={page.properties.Name.title} />
         </h1>
         <section>
@@ -184,7 +186,7 @@ export default function Post({ page, blocks }) {
             <Fragment key={block.id}>{renderBlock(block)}</Fragment>
           ))}
           <Link href="/">
-            <a className={styles.back}>← Go home</a>
+            <a className="text-blue-600 hover:text-blue-800">← Go home</a>
           </Link>
         </section>
       </article>
