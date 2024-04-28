@@ -7,26 +7,23 @@ export const databaseId = process.env.NOTION_DATABASE_ID;
 
 export default function Home({ posts }) {
   return (
-    <div className="container mx-auto px-4">
+    <div className="mx-auto w-full">
       <Head>
         <title>Notion Next.js blog</title>
         <link rel="icon" href="/favicon.ico" />
+        <link rel="stylesheet" href="/styles/output.css" />
       </Head>
-
-      <main>
-        <header className="my-12">
-          <div className="flex items-center space-x-4">
-            {/* SVG icons remain unchanged */}
-          </div>
-          <h1 className="text-3xl font-bold my-2">
-            Next.js + Notion API ブログ
-          </h1>
-          <p className="text-gray-600">
-            Notionと連携しているブログです。Notionに書き込めばそのままブログとして投稿できます。
-          </p>
-        </header>
-
-        <h2 className="text-xl font-semibold my-4 uppercase tracking-wide">
+      <header className="my-12">
+        <div className="flex items-center space-x-4">
+          {/* SVG icons remain unchanged */}
+        </div>
+        <h1 className="my-2 text-3xl font-bold">Next.js + Notion API ブログ</h1>
+        <p className="text-gray-600">
+          Notionと連携しているブログです。Notionに書き込めばそのままブログとして投稿できます。
+        </p>
+      </header>
+      <main className="bg-gray-500 px-4 py-12">
+        <h2 className="my-4 text-xl font-semibold uppercase tracking-wide">
           All Posts
         </h2>
         <ol>
@@ -58,6 +55,9 @@ export default function Home({ posts }) {
           })}
         </ol>
       </main>
+      <footer className="my-12 w-full text-center">
+        <p>Copyright © 2024 Next.js + Notion API</p>
+      </footer>
     </div>
   );
 }
