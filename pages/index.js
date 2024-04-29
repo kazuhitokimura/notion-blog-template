@@ -17,17 +17,15 @@ export default function Home({ posts }) {
         <div className="flex items-center space-x-4">
           {/* SVG icons remain unchanged */}
         </div>
-        <h1 className="text-2xl font-bold">Next.js + Notion API ブログ</h1>
-        <p className="text-slate-600">
+        <h1 className="text-xl font-bold">Next.js + Notion API ブログ</h1>
+        <p className="text-sm text-slate-600">
           Notionと連携しているブログです。Notionに書き込めばそのままブログとして投稿できます。
         </p>
       </header>
-      <main className="bg-slate-50 px-4 py-12">
-        <h2 className="my-4 text-xl font-semibold uppercase tracking-wide">
-          All Posts
-        </h2>
-        <ol>
+      <main className="flex flex-col items-center justify-center bg-slate-50">
+        <ul className="mx-4 my-8 flex w-full max-w-2xl flex-col items-center gap-4">
           {posts.map((post) => {
+            // 投稿の最終編集時間を 'MMM DD, YYYY' 形式でフォーマット
             const date = new Date(post.last_edited_time).toLocaleString(
               "en-US",
               {
@@ -37,23 +35,19 @@ export default function Home({ posts }) {
               },
             );
             return (
-              <li key={post.id} className="mb-6">
-                <h3 className="text-lg font-semibold">
+              <li key={post.id} className="w-full rounded-lg bg-white p-5">
+                <h2 className="text-lg font-semibold">
                   <Link href={`/${post.id}`}>
                     <a className="text-blue-600 hover:text-blue-800">
                       <Text text={post.properties.Name.title} />
                     </a>
                   </Link>
-                </h3>
-
+                </h2>
                 <p className="text-sm text-slate-500">{date}</p>
-                <Link href={`/${post.id}`}>
-                  <a className="text-blue-500 hover:underline">Read post →</a>
-                </Link>
               </li>
             );
           })}
-        </ol>
+        </ul>
       </main>
       <footer className="w-full px-8 py-3 text-center">
         <p>Copyright © 2024 Next.js + Notion API</p>
