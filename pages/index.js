@@ -18,11 +18,11 @@ export default function Home({ posts }) {
           {/* SVG icons remain unchanged */}
         </div>
         <h1 className="text-xl font-bold">Next.js + Notion API ブログ</h1>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-gray-600">
           Notionと連携しているブログです。Notionに書き込めばそのままブログとして投稿できます。
         </p>
       </header>
-      <main className="flex flex-col items-center justify-center bg-slate-50">
+      <main className="flex flex-col items-center justify-center bg-gray-50">
         <ul className="mx-4 my-8 flex w-full max-w-2xl flex-col items-center gap-4">
           {posts.map((post) => {
             // 投稿の最終編集時間を 'MMM DD, YYYY' 形式でフォーマット
@@ -35,15 +35,18 @@ export default function Home({ posts }) {
               },
             );
             return (
-              <li key={post.id} className="w-full rounded-lg bg-white p-5">
-                <h2 className="text-lg font-semibold">
-                  <Link href={`/${post.id}`}>
-                    <a className="text-blue-600 hover:text-blue-800">
+              <li
+                key={post.id}
+                className="w-full cursor-pointer rounded-lg bg-white p-5"
+              >
+                <Link href={`/${post.id}`}>
+                  <a className="block h-full w-full">
+                    <h2 className="text-xl font-semibold">
                       <Text text={post.properties.Name.title} />
-                    </a>
-                  </Link>
-                </h2>
-                <p className="text-sm text-slate-500">{date}</p>
+                    </h2>
+                    <p className="text-sm text-gray-500">{date}</p>
+                  </a>
+                </Link>
               </li>
             );
           })}
